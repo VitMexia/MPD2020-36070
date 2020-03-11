@@ -31,8 +31,11 @@ public class LazyQueries {
 
             @Override
             public T next() {
-                if(hasNext())
-                    return temp;
+                if(hasNext()) {
+					T tmp = temp;
+					temp = null;
+					return tmp;
+				}
                 else
                     throw new IndexOutOfBoundsException("Iterator has been depleted");
                 
