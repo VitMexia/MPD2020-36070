@@ -14,30 +14,33 @@ public class LazyQueries {
         return () -> new Iterator<T>() {
 			
             Iterator<T> iter = src.iterator();
-            T temp = null;
+            T temp ;
+			boolean current;
 			
             @Override
             public boolean hasNext() {
-                if (temp != null) return true;
+                if (current) return true;
 				if (!iter.hasNext()) return false;
 				
                 temp = iter.next();
 
-                while(iter.hasNext() && !pred.test(temp)){
+                while(iter.hasNext()){
                     temp = iter.next();
+					if(pred.test(temp)){
+						current = true;
+					}
                 }
-                return temp != null;
+                return current = false;
             }
 
             @Override
             public T next() {
                 if(hasNext()) {
-					T tmp = temp;
-					temp = null;
-					return tmp;
+					current = false;
+					return temp;
 				}
                 else
-                    throw new IndexOutOfBoundsException("Iterator has been depleted");
+                    throw new IndexOutOfBoundsException("Sequence has been depleted");
                 
             }
         };
